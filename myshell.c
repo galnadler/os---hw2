@@ -20,34 +20,40 @@ int prepare(void);
 int handle_signal(int signum, void (*action)(int));
 int finalize(void);
 
+//
+//
+
 int process_arglist(int count, char **arglist)
 {
-	int i = 0;
 	printf("Debug: process_arglist called with %d arguments.\n", count);
-	for (i = 0; i < count; i++)
+	if (count == 1)
+	{
+		return execute_general(count, arglist);
+	}
+	for (int i = 0; i < count; i++)
 	{
 		printf("Debug: arglist[%d] = %s\n", i, arglist[i]);
-		if (arglist[i][0] == '|')
+		if (strcmp(arglist[i], "|") == 0)
 		{
 			return pipe_it_up(count, arglist, i);
 		}
-	}
-	if (arglist[count - 1][0] == '&')
-	{
-		return run_process_background(count, arglist);
-	}
 
-	if (count >= 2 && arglist[i][0] == '<')
-	{
-		return open_child_process_input(count, arglist);
-	}
+		if (strcmp(arglist[i], "&") == 0)
+		{
+			return run_process_background(count, arglist);
+		}
 
-	if (count > 1 && (strlen(arglist[count - 2]) == 2) && (strcmp(arglist[i], ">>") == 0))
-	{
-		return open_child_process_output(count, arglist);
-	}
+		if (count >= 2 && (strcmp(arglist[i], "<") == 0))
+		{
+			return open_child_process_input(count, arglist);
+		}
 
-	return execute_general(count, arglist);
+		if (count > 1 && (strcmp(arglist[i], ">>") == 0))
+		{
+			return open_child_process_output(count, arglist);
+		}
+	}
+	return 0;
 }
 
 int run_process_background(int count, char **arglist)
