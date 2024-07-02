@@ -22,10 +22,9 @@ int finalize(void);
 
 // arglist - a list of char* arguments (words) provided by the user
 // it contains count+1 items, where the last item (arglist[count]) and *only* the last is NULL
-// RETURNS - 1 if should continue, 0 otherwise
+// RETURNS - 1 if should continue, 0 otherwise.
 int process_arglist(int count, char **arglist)
 {
-
 	if (count == 1)
 	{
 		return execute_general(count, arglist);
@@ -61,7 +60,6 @@ int process_arglist(int count, char **arglist)
 
 int run_process_background(int count, char **arglist)
 {
-
 	pid_t pid;
 	pid = fork();
 	if (pid == -1)
