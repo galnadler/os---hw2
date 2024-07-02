@@ -26,27 +26,29 @@ int finalize(void);
 int process_arglist(int count, char **arglist)
 { // should return 1 if no error occurs after every foreground child process it created exits.
 	int i = 0;
-	while (i < count)
+	for (i = 0; i < count; i++)
 	{
-		if (arglist[i][0] == '&')
-		{ // run the child process in the background
-			return run_process_background(count, arglist);
-		}
+		// run two child processes, with the output of the first process piped to the input of the second process.
 		if (arglist[i][0] == '|')
-		{ // run two child processes, with the output of the first process piped to the input of the second process.
+		{
 			return pipe_it_up(count, arglist, i);
 		}
-		if (arglist[i][0] == '<' && count >= 2)
-		{ // open the specified file and then run the child process, with the input redirected from the input file.
-			return open_child_process_input(count, arglist);
-		}
-
-		if ((strlen(arglist[count - 2]) == 2) && (strcmp(arglist[i], ">>") == 0) && count > 1)
-		{ // open the specified file and then run the child process, with the output redirected from the output file.
-			return open_child_process_output(count, arglist);
-		}
-		i++;
 	}
+	if (arglist[count - 1][0] == '&')
+	{ // run the child process in the background
+		return run_process_background(count, arglist);
+	}
+
+	if (count >= 2 && arglist[i][0] == '<')
+	{ // open the specified file and then run the child process, with the input redirected from the input file.
+		return open_child_process_input(count, arglist);
+	}
+
+	if (count > 1 && (strlen(arglist[count - 2]) == 2) && (strcmp(arglist[i], ">>") == 0))
+	{ // open the specified file and then run the child process, with the output redirected from the output file.
+		return open_child_process_output(count, arglist);
+	}
+
 	return execute_general(count, arglist);
 }
 
