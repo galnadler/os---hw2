@@ -53,7 +53,7 @@ int process_arglist(int count, char **arglist)
 			return open_child_process_output(count, arglist);
 		}
 	}
-	return 0;
+	return execute_general(count, arglist);
 }
 
 int run_process_background(int count, char **arglist)
